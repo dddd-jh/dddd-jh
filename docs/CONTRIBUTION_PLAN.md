@@ -12,6 +12,7 @@
 | [small_gicp](https://github.com/koide3/small_gicp) | C++／Python 点云配准 | 2026-09-29 | 数据预处理、接口边界、配准结果与回归测试 |
 | [KISS-ICP](https://github.com/PRBonn/kiss-icp) | 激光里程计与点云运动畸变补偿 | 2026-06-09 | 传感器数据接入、逐点时间戳与点云预处理 |
 | [RKO-LIO](https://github.com/PRBonn/rko_lio) | 激光惯导里程计 | 2026-09-29 | 激光／IMU 时间排序、数据读取与传感器协同 |
+| [KISS-SLAM](https://github.com/PRBonn/kiss-slam) | 激光 SLAM、局部地图与栅格地图导出 | 2026-08-11 | 地图坐标、文件导出与机器人系统接口 |
 | [GLIM](https://github.com/koide3/glim) | 点云定位与建图 | 2026-09-06 | 数据导入、评测与定位模块；需要对应运行环境 |
 | [rosbag2](https://github.com/ros2/rosbag2) | ROS 2 数据记录与回放 | 2026-10-01 | 时间戳、消息与回放问题；需要匹配的 ROS 2 环境 |
 
@@ -63,3 +64,12 @@
 - 验证：11 项新增排序测试修改前 3 项失败，修改后全部通过。覆盖文件末尾多个帧、IMU 顺序及仅输出一次、继续读取、空输入与不足覆盖等情况。
 - 仓库检查：全部 53 项 Python 测试通过，包括原始 PLY／CSV、ROS bag 读取、LIO 管线与标量转换；Ruff 0.16.1 lint／format 和 Git 空白检查通过。
 - 边界：本机当前 Python 源码与已发布 RKO-LIO 0.4.0 Windows 原生扩展联合验证，未从当前 C++ 源码重新构建扩展或运行 ROS 节点；上游 CI 需要维护者批准后运行。
+
+## 第五项贡献：KISS-SLAM 二维地图导出坐标修复
+
+- PR：[PRBonn/kiss-slam #60](https://github.com/PRBonn/kiss-slam/pull/60)，2026-10-05 提交，待评审。
+- 问题：内部栅格按 x／y 索引存储，直接写入 PNG 后却被按图像行／列解释，导致非方形地图尺寸交换，并使地图单元在 ROS 坐标约定下落到错误位置。
+- 修改：按图像列对应 x、图像行从最大 y 向下的顺序转换栅格；保留 YAML 原点、分辨率、阈值和像素缩放。
+- 测试结构：将 PNG／YAML 序列化移入可独立测试的模块，保留原有 mapper 方法入口，并在上游 Python CI 中运行新增测试。
+- 验证：13 项回归测试在原导出方向下 10 项失败，修复后全部通过。实际写入和读取 PNG／YAML，核对非方形及单轴地图尺寸、正负原点、两种分辨率和占用／空闲／未知单元的世界坐标；Black、isort、Python 编译及 Git 空白检查通过。
+- 边界：本机验证文件序列化与 ROS 地图坐标约定，未启动 ROS 地图服务器、运行原生 SLAM 管线或完整源码构建；上游 CI 需要维护者批准后运行。
