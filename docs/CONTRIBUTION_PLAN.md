@@ -11,6 +11,7 @@
 | [evo](https://github.com/MichaelGrupp/evo) | SLAM／里程计轨迹评测 | 2026-09-08 | 输入格式、时间戳处理、轨迹检查、数值边界 |
 | [small_gicp](https://github.com/koide3/small_gicp) | C++／Python 点云配准 | 2026-09-29 | 数据预处理、接口边界、配准结果与回归测试 |
 | [KISS-ICP](https://github.com/PRBonn/kiss-icp) | 激光里程计与点云运动畸变补偿 | 2026-06-09 | 传感器数据接入、逐点时间戳与点云预处理 |
+| [RKO-LIO](https://github.com/PRBonn/rko_lio) | 激光惯导里程计 | 2026-09-29 | 激光／IMU 时间排序、数据读取与传感器协同 |
 | [GLIM](https://github.com/koide3/glim) | 点云定位与建图 | 2026-09-06 | 数据导入、评测与定位模块；需要对应运行环境 |
 | [rosbag2](https://github.com/ros2/rosbag2) | ROS 2 数据记录与回放 | 2026-10-01 | 时间戳、消息与回放问题；需要匹配的 ROS 2 环境 |
 
@@ -53,3 +54,12 @@
 - 验证：19 项新增回归测试覆盖 t／time／timestamp 三种字段及整数／单精度／双精度编码；修改前 12 项失败，修改后全部通过。全部 20 项 Python 测试、Black 和 isort 通过。
 - 集成检查：真实写入和读取 ROS 1 Noetic／ROS 2 Humble bag，6 组输入通过原生畸变补偿验证。示例 x 坐标 [10, NaN, 30] 与时间戳 [0, 1, 2] 在相对 x 平移 2 的条件下，修改前错误输出 [8, 29]，修改后正确输出 [8, 30]。
 - 边界：本机 Python 源码与已发布 KISS-ICP 1.3.0 Windows 原生扩展联合验证，未在本机重新构建 C++ 扩展或运行 ROS 节点；上游 CI 需要维护者批准后运行。
+
+## 第四项贡献：RKO-LIO 激光／IMU 排序器丢帧修复
+
+- PR：[PRBonn/rko_lio #189](https://github.com/PRBonn/rko_lio/pull/189)，2026-10-05 提交，待评审。
+- 问题：最后一条输入 IMU 数据已经覆盖多个缓存激光帧，但排序器输出一帧后再次读取输入，在文件结束时退出，导致剩余已覆盖帧被丢弃。
+- 修改：处理一帧后重新检查缓存，先输出具备覆盖条件的激光帧，再读取更多输入；保留 IMU 覆盖必须严格超过激光帧结束时间的条件。
+- 验证：11 项新增排序测试修改前 3 项失败，修改后全部通过。覆盖文件末尾多个帧、IMU 顺序及仅输出一次、继续读取、空输入与不足覆盖等情况。
+- 仓库检查：全部 53 项 Python 测试通过，包括原始 PLY／CSV、ROS bag 读取、LIO 管线与标量转换；Ruff 0.16.1 lint／format 和 Git 空白检查通过。
+- 边界：本机当前 Python 源码与已发布 RKO-LIO 0.4.0 Windows 原生扩展联合验证，未从当前 C++ 源码重新构建扩展或运行 ROS 节点；上游 CI 需要维护者批准后运行。
