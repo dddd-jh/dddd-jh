@@ -23,7 +23,7 @@
 
 [贡献计划](docs/CONTRIBUTION_PLAN.md) · [公开 PR 记录](https://github.com/pulls?q=is%3Apr+author%3Adddd-jh)
 
-- **[evo #786](https://github.com/MichaelGrupp/evo/pull/786) · 已提交，待评审：** 在已有遍历中提取轨迹坐标系，移除 ROS bag 的第二次扫描和额外原始消息缓存；增加 ROS 1／ROS 2 回归测试。
+- **[evo #786](https://github.com/MichaelGrupp/evo/pull/786) · 已合并：** 在已有遍历中提取轨迹坐标系，移除 ROS bag 的第二次扫描和额外原始消息缓存；增加 ROS 1／ROS 2 回归测试。
 - 本机验证：126 项测试与 2 项子测试通过，Black 和 mypy 检查通过。环境及验证范围见 PR。
 - **[small_gicp #141](https://github.com/koide3/small_gicp/pull/141) · 已提交，待评审：** 修复串行、OpenMP、TBB 体素降采样错误保留越界点的问题；新增 16 项回归测试，覆盖有效坐标边界、混合点云及颜色平均。
 - 本机原生 C++ 验证：相同测试修改前 7 项失败，修改后 16 项全部通过，包括 OpenMP 1／4 线程与真实 TBB 运行。完整上游测试状态见 PR。
@@ -43,3 +43,6 @@
 
 - **[MCAP #1862](https://github.com/foxglove/mcap/pull/1862) · 已提交，待评审：** 修复 ROS 2 Time／Duration 内置备用定义将秒数视为无符号整数的问题，使负秒数正确编码和解码；显式嵌套定义保留现有行为。
 - 验证：50 项新增测试原实现 24 项失败，修复后全部通过；四个 Python 包共 119 项测试通过，格式、类型检查及源码包／wheel 构建通过。1 项 Windows 管道测试未完成并被排除；本机未运行 ROS 节点或跨语言一致性测试。上游 Linux Python CI 的完整测试、示例、lint、build 及跨语言 Python 一致性检查已通过，其他 CI 状态见 PR。
+
+- **[Ouster SDK #726](https://github.com/ouster-lidar/ouster-sdk/pull/726) · 已提交，待评审：** 修复轨迹插值对 uint64 激光时间戳的减法溢出，保留纳秒精度及原始时间戳类型，覆盖逐列位姿写入和原生点云变换。
+- 验证：52 项新增测试原实现 14 项失败；修复后全部 67 项相关测试在 NumPy 1.x／2.x 及无 SciPy 实现下通过。flake8 通过，mypy 保留 3 项原有类型诊断。使用发布版原生绑定验证，本机未重新构建完整 SDK 或运行硬件／ROS 管线；上游可见检查需维护者批准。

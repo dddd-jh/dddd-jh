@@ -17,6 +17,7 @@
 | [GLIM](https://github.com/koide3/glim) | 点云定位与建图 | 2026-09-06 | 数据导入、评测与定位模块；需要对应运行环境 |
 | [gtsam_points](https://github.com/koide3/gtsam_points) | 点云配准与 GTSAM 优化因子 | 2026-09-10 | 邻域搜索、几何容器与回归测试 |
 | [MCAP](https://github.com/foxglove/mcap) | ROS 2 传感器数据记录与消息编码 | 2026-10-05 | CDR 消息定义、时间字段与数据往返验证 |
+| [Ouster SDK](https://github.com/ouster-lidar/ouster-sdk) | 激光数据处理、位姿插值与点云变换 | 2026-09-01 | 传感器时间戳、逐列位姿及回归测试 |
 | [rosbag2](https://github.com/ros2/rosbag2) | ROS 2 数据记录与回放 | 2026-10-01 | 时间戳、消息与回放问题；需要匹配的 ROS 2 环境 |
 
 ## 每项贡献的完成条件
@@ -36,10 +37,11 @@
 
 ## 首项贡献：evo ROS bag 轨迹读取
 
-- PR：[MichaelGrupp/evo #786](https://github.com/MichaelGrupp/evo/pull/786)，2026-10-05 提交，待评审。
+- PR：[MichaelGrupp/evo #786](https://github.com/MichaelGrupp/evo/pull/786)，2026-10-05 提交，2026-10-06 获维护者批准并合并。
 - 问题：轨迹已解析后，代码再次遍历同一话题并将原始消息全部装入列表，仅用于获取第一条消息的坐标系。
 - 修改：在首次遍历中保存坐标系，移除额外扫描和原始消息缓存，保留首条消息的空坐标系名称；空迭代器返回明确异常。
 - 验证：真实写入和读取 ROS 1、ROS 2 bag，修改前两种格式均因扫描两次失败，修改后通过；全量 126 项测试、2 项子测试、Black 和 mypy 通过。
+- 评审跟进：已向维护者[回复合并致谢](https://github.com/MichaelGrupp/evo/pull/786#issuecomment-5998931254)。
 - 边界：仍需保存轨迹数组，未宣称恒定内存；本机 Windows／Python 3.12 验证，原生 ROS 2 Docker 构建和可选 Rerun 集成未在本机运行。
 
 ## 第二项贡献：small_gicp 体素降采样范围处理
@@ -66,7 +68,7 @@
 - 修改：处理一帧后重新检查缓存，先输出具备覆盖条件的激光帧，再读取更多输入；保留 IMU 覆盖必须严格超过激光帧结束时间的条件。
 - 验证：11 项新增排序测试修改前 3 项失败，修改后全部通过。覆盖文件末尾多个帧、IMU 顺序及仅输出一次、继续读取、空输入与不足覆盖等情况。
 - 仓库检查：全部 53 项 Python 测试通过，包括原始 PLY／CSV、ROS bag 读取、LIO 管线与标量转换；Ruff 0.16.1 lint／format 和 Git 空白检查通过。
-- 评审跟进：维护者认可修复，希望仅保留包内的一行改动；已移除 PR 中的新增测试并回复维护者。原回归用例留存在本机，上述 53 项验证结果包括原本新增的本地测试。维护者于 2026-10-05 合并该 PR。
+- 评审跟进：维护者认可修复，希望仅保留包内的一行改动；已移除 PR 中的新增测试并回复维护者。原回归用例留存在本机，上述 53 项验证结果包括原本新增的本地测试。维护者于 2026-10-05 合并该 PR。2026-10-06 已通过邮件回复致谢，回复已[同步至原 PR](https://github.com/PRBonn/rko_lio/pull/189#issuecomment-5998664085)。
 - 边界：本机当前 Python 源码与已发布 RKO-LIO 0.4.0 Windows 原生扩展联合验证，未从当前 C++ 源码重新构建扩展或运行 ROS 节点；上游构建记录见已合并的 PR。
 
 ## 第五项贡献：KISS-SLAM 二维地图导出坐标修复
@@ -115,5 +117,16 @@
 - 验证：Windows／Python 3.10.22、uv 冻结依赖环境。50 项新增回归测试原实现 24 项失败，修复后全部通过；受影响的 ROS 2 包共 69 项通过。
 - 覆盖：Time／Duration 两种类型、负／零／正秒数、int32 上下界、大小端 CDR、显式嵌套定义，以及 NONE／LZ4／ZSTD 三种压缩下实际 MCAP 写入与读取；预期字节由独立 struct 编码构造。
 - 仓库检查：MCAP 核心 39 项、Protobuf 支持 7 项、ROS 1 支持 4 项测试通过，加上 ROS 2 共 119 项。四个包的 flake8／Black／isort／Pyright、源码包及 wheel 构建通过；使用官方 LFS 数据并核对 SHA-256 与文件大小后运行数据读取测试。
-- 上游验证：Linux Python CI 的 make lint、make test、make examples、make build 全部通过；跨语言 Python 一致性检查也已通过。验证记录：[Python CI](https://github.com/foxglove/mcap/actions/runs/37336646143/job/111853004457)、[Python 一致性](https://github.com/foxglove/mcap/actions/runs/37336646143/job/111853004886)。
+- 上游验证：Linux Python CI 的 make lint、make test、make examples、make build 全部通过；跨语言 Python 一致性检查也已通过。MCAP 上游 CI 目前已全部完成，执行的检查无失败。验证记录：[Python CI](https://github.com/foxglove/mcap/actions/runs/37336646143/job/111853004457)、[Python 一致性](https://github.com/foxglove/mcap/actions/runs/37336646143/job/111853004886)。
 - 边界：已有核心 test_make_not_seeking 管道测试在 Windows 下阻塞，最终本机运行排除这 1 项；未在本机验证其 POSIX 行为、跨语言一致性测试或 ROS 节点。新增测试由现有 Python CI 自动发现；其他 CI 和合并状态以 PR 为准。
+
+## 第十项贡献：Ouster SDK 无符号轨迹时间戳溢出修复
+
+- PR：[ouster-lidar/ouster-sdk #726](https://github.com/ouster-lidar/ouster-sdk/pull/726)，2026-10-06 提交，待评审。
+- 问题：轨迹节点与查询使用 NumPy uint64 时间戳时，范围检查和左侧外推中的减法会溢出；合法内部查询被拒绝，允许外推时又可能生成极大的错误平移。真实激光帧的列时间完全位于轨迹内部时也会被拒绝。
+- 修改：仅在内部索引和查询运算中将 NumPy 整数转为 Python 整数，使用有符号差值，保留纳秒整数精度、浮点时间行为、原始轨迹节点类型和查询数组；保持既有插值及外推策略。
+- 验证：Windows／Python 3.12.14。52 项新增测试原实现 14 项失败，修复后加上全部 15 项已有位姿测试共 67 项通过。分别使用 NumPy 2.5.3／SciPy 1.18.1、NumPy 1.26.4／SciPy 1.15.3 及实际无 SciPy 后备实现验证同一组 67 项测试；数值运行警告设为错误。
+- 覆盖：普通／有符号／无符号整数混用、标量及批量查询、重复与端点查询、有限及无限外推、越界拒绝、Unix 纳秒时间和 uint64 大值边界、节点类型与输入数组保留。
+- 原生接口检查：真实 LidarFrame 状态掩码、原始及重映射列时间、逐列 body_to_world 位姿写入和原生 dewarp 点云变换；无效列保留原位姿。4 项相关原生接口用例在原实现中失败，修复后通过。
+- 工程检查：CI 指定的 flake8 7.1.2 与 Git 空白检查通过。mypy 1.14.1 针对受影响源文件及测试仍报告 3 项原有 bisect_right／Numeric 类型诊断，与原代码核对后无新增诊断位置。
+- 边界：测试加载当前 checkout 的真实 pose_util.py，原生接口使用已发布的 Ouster SDK 1.0.1 Windows wheel；未从本次源码重新构建完整 SDK，未运行完整 PCAP／OSF、可视化、硬件或 ROS 管线。新测试由现有 Python 测试任务自动发现；当前可见上游检查工作流需维护者批准，合并状态以 PR 为准。
