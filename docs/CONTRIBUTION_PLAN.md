@@ -16,6 +16,7 @@
 | [MapClosures](https://github.com/PRBonn/MapClosures) | 点云密度地图闭环检测与位姿配准 | 2026-08-14 | 二维配准、刚体变换与几何回归测试 |
 | [GLIM](https://github.com/koide3/glim) | 点云定位与建图 | 2026-09-06 | 数据导入、评测与定位模块；需要对应运行环境 |
 | [gtsam_points](https://github.com/koide3/gtsam_points) | 点云配准与 GTSAM 优化因子 | 2026-09-10 | 邻域搜索、几何容器与回归测试 |
+| [MCAP](https://github.com/foxglove/mcap) | ROS 2 传感器数据记录与消息编码 | 2026-10-05 | CDR 消息定义、时间字段与数据往返验证 |
 | [rosbag2](https://github.com/ros2/rosbag2) | ROS 2 数据记录与回放 | 2026-10-01 | 时间戳、消息与回放问题；需要匹配的 ROS 2 环境 |
 
 ## 每项贡献的完成条件
@@ -60,13 +61,13 @@
 
 ## 第四项贡献：RKO-LIO 激光／IMU 排序器丢帧修复
 
-- PR：[PRBonn/rko_lio #189](https://github.com/PRBonn/rko_lio/pull/189)，2026-10-05 提交，已响应评审，未合并。
+- PR：[PRBonn/rko_lio #189](https://github.com/PRBonn/rko_lio/pull/189)，2026-10-05 提交，已合并。
 - 问题：最后一条输入 IMU 数据已经覆盖多个缓存激光帧，但排序器输出一帧后再次读取输入，在文件结束时退出，导致剩余已覆盖帧被丢弃。
 - 修改：处理一帧后重新检查缓存，先输出具备覆盖条件的激光帧，再读取更多输入；保留 IMU 覆盖必须严格超过激光帧结束时间的条件。
 - 验证：11 项新增排序测试修改前 3 项失败，修改后全部通过。覆盖文件末尾多个帧、IMU 顺序及仅输出一次、继续读取、空输入与不足覆盖等情况。
 - 仓库检查：全部 53 项 Python 测试通过，包括原始 PLY／CSV、ROS bag 读取、LIO 管线与标量转换；Ruff 0.16.1 lint／format 和 Git 空白检查通过。
-- 评审跟进：维护者认可修复，希望仅保留包内的一行改动；已移除 PR 中的新增测试并回复维护者。原回归用例留存在本机，上述 53 项验证结果包括原本新增的本地测试。
-- 边界：本机当前 Python 源码与已发布 RKO-LIO 0.4.0 Windows 原生扩展联合验证，未从当前 C++ 源码重新构建扩展或运行 ROS 节点；上游 CI 需要维护者批准后运行。
+- 评审跟进：维护者认可修复，希望仅保留包内的一行改动；已移除 PR 中的新增测试并回复维护者。原回归用例留存在本机，上述 53 项验证结果包括原本新增的本地测试。维护者于 2026-10-05 合并该 PR。
+- 边界：本机当前 Python 源码与已发布 RKO-LIO 0.4.0 Windows 原生扩展联合验证，未从当前 C++ 源码重新构建扩展或运行 ROS 节点；上游构建记录见已合并的 PR。
 
 ## 第五项贡献：KISS-SLAM 二维地图导出坐标修复
 
@@ -105,3 +106,13 @@
 - 覆盖：静态 1／3 近邻、动态 KNN、半径搜索、临时回调、作用域结束、复制对象生命周期、结果排序、距离阈值及引用捕获观察外部索引更新。
 - 工程检查：clang-format 14 与 Git 空白检查通过；新增测试由仓库现有 CMake 源文件搜索及 Docker CI 自动纳入，不修改构建流程。
 - 边界：本机验证搜索结果容器，未构建完整 GTSAM／CUDA 库或运行完整点云配准测试套件；上游构建及许可证 CI 当前需要维护者批准后运行，合并状态以 PR 为准。
+
+## 第九项贡献：MCAP ROS 2 内置时间字段修复
+
+- PR：[foxglove/mcap #1862](https://github.com/foxglove/mcap/pull/1862)，2026-10-05 提交，待评审。
+- 问题：消息引用 Time／Duration 而省略其嵌套定义时，库使用的内置备用定义将 sec 声明为 uint32，违反 ROS 2 的 int32 定义；sec=-2 会被解码为 4294967294，负值写入抛出 struct.error。
+- 修改：仅将内置 sec 字段改为 int32，保留 nanosec 为 uint32；显式拼接的嵌套定义仍覆盖备用定义，MCAP 记录本身的 log／publish 时间字段不受影响。
+- 验证：Windows／Python 3.10.22、uv 冻结依赖环境。50 项新增回归测试原实现 24 项失败，修复后全部通过；受影响的 ROS 2 包共 69 项通过。
+- 覆盖：Time／Duration 两种类型、负／零／正秒数、int32 上下界、大小端 CDR、显式嵌套定义，以及 NONE／LZ4／ZSTD 三种压缩下实际 MCAP 写入与读取；预期字节由独立 struct 编码构造。
+- 仓库检查：MCAP 核心 39 项、Protobuf 支持 7 项、ROS 1 支持 4 项测试通过，加上 ROS 2 共 119 项。四个包的 flake8／Black／isort／Pyright、源码包及 wheel 构建通过；使用官方 LFS 数据并核对 SHA-256 与文件大小后运行数据读取测试。
+- 边界：已有核心 test_make_not_seeking 管道测试在 Windows 下阻塞，最终运行排除这 1 项；未在本机验证其 POSIX 行为、跨语言一致性测试或 ROS 节点。新增测试由现有 Python CI 自动发现，提交时尚无上游 CI 结果，合并状态以 PR 为准。
