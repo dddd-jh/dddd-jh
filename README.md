@@ -23,4 +23,5 @@
 
 [贡献计划](docs/CONTRIBUTION_PLAN.md) · [公开 PR 记录](https://github.com/pulls?q=is%3Apr+author%3Adddd-jh)
 
-以最小复现、回归测试与代码评审积累贡献；完成的工作将按提交、待评审、合并等真实状态记录。
+- **[evo #786](https://github.com/MichaelGrupp/evo/pull/786) · 已提交，待评审：** 在已有遍历中提取轨迹坐标系，移除 ROS bag 的第二次扫描和额外原始消息缓存；增加 ROS 1／ROS 2 回归测试。
+- 本机验证：126 项测试与 2 项子测试通过，Black 和 mypy 检查通过。环境及验证范围见 PR。
