@@ -25,3 +25,5 @@
 
 - **[evo #786](https://github.com/MichaelGrupp/evo/pull/786) · 已提交，待评审：** 在已有遍历中提取轨迹坐标系，移除 ROS bag 的第二次扫描和额外原始消息缓存；增加 ROS 1／ROS 2 回归测试。
 - 本机验证：126 项测试与 2 项子测试通过，Black 和 mypy 检查通过。环境及验证范围见 PR。
+- **[small_gicp #141](https://github.com/koide3/small_gicp/pull/141) · 已提交，待评审：** 修复串行、OpenMP、TBB 体素降采样错误保留越界点的问题；新增 16 项回归测试，覆盖有效坐标边界、混合点云及颜色平均。
+- 本机原生 C++ 验证：相同测试修改前 7 项失败，修改后 16 项全部通过，包括 OpenMP 1／4 线程与真实 TBB 运行。完整上游测试状态见 PR。
