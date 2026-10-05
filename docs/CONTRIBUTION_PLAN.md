@@ -4,7 +4,7 @@
 
 ## 已核对的候选社区
 
-以下是 2026-10-05 通过 GitHub 仓库元数据核对的最近推送时间。推送记录说明仓库仍有更新，不代表每个 Issue 都会得到及时回复。
+以下是 2026-10-05 至 2026-10-06 通过 GitHub 仓库元数据核对的最近推送时间。推送记录说明仓库仍有更新，不代表每个 Issue 都会得到及时回复。
 
 | 社区 | 与我的方向的联系 | 最近推送 | 切入点 |
 | --- | --- | --- | --- |
@@ -18,6 +18,7 @@
 | [gtsam_points](https://github.com/koide3/gtsam_points) | 点云配准与 GTSAM 优化因子 | 2026-09-10 | 邻域搜索、几何容器与回归测试 |
 | [MCAP](https://github.com/foxglove/mcap) | ROS 2 传感器数据记录与消息编码 | 2026-10-05 | CDR 消息定义、时间字段与数据往返验证 |
 | [Ouster SDK](https://github.com/ouster-lidar/ouster-sdk) | 激光数据处理、位姿插值与点云变换 | 2026-09-01 | 传感器时间戳、逐列位姿及回归测试 |
+| [pytransform3d](https://github.com/dfki-ric/pytransform3d) | 机器人刚体变换、时序位姿与插值 | 2026-10-02 | 末帧查询、坐标系链路及几何回归测试 |
 | [rosbag2](https://github.com/ros2/rosbag2) | ROS 2 数据记录与回放 | 2026-10-01 | 时间戳、消息与回放问题；需要匹配的 ROS 2 环境 |
 
 ## 每项贡献的完成条件
@@ -130,3 +131,13 @@
 - 原生接口检查：真实 LidarFrame 状态掩码、原始及重映射列时间、逐列 body_to_world 位姿写入和原生 dewarp 点云变换；无效列保留原位姿。4 项相关原生接口用例在原实现中失败，修复后通过。
 - 工程检查：CI 指定的 flake8 7.1.2 与 Git 空白检查通过。mypy 1.14.1 针对受影响源文件及测试仍报告 3 项原有 bisect_right／Numeric 类型诊断，与原代码核对后无新增诊断位置。
 - 边界：测试加载当前 checkout 的真实 pose_util.py，原生接口使用已发布的 Ouster SDK 1.0.1 Windows wheel；未从本次源码重新构建完整 SDK，未运行完整 PCAP／OSF、可视化、硬件或 ROS 管线。新测试由现有 Python 测试任务自动发现；当前可见上游检查工作流需维护者批准，合并状态以 PR 为准。
+
+## 第十一项贡献：pytransform3d 时序位姿末尾查询越界修复
+
+- PR：[dfki-ric/pytransform3d #385](https://github.com/dfki-ric/pytransform3d/pull/385)，2026-10-06 提交至贡献指南要求的 develop 分支，待评审。
+- 问题：默认 time_clipping=False 时，查询恰好等于最后一个采样时间通过范围校验，但后继采样索引越过数组末尾，标量、批量及坐标系链路查询均抛出 IndexError；单样本序列查询唯一时间也失败。
+- 修改：仅将后继采样索引限制到最后一个有效样本；最后时间对应前后同一采样点，沿用已有零插值比例返回末尾位姿。真正超出范围的时间仍按既有规则抛出 ValueError，不开启外推。
+- 验证：Windows／Python 3.12.14。21 项新增回归用例原实现 10 项失败，修复后全部通过；NumPy 2.5.3／SciPy 1.18.1 及 NumPy 1.26.4／SciPy 1.15.3 下全部 49 项变换管理器测试通过，包括 Graphviz PNG 导出。
+- 覆盖：标量、零维数组、批量及重复末尾查询，非单位旋转与平移，解析可核对的螺旋运动插值，单样本序列，紧邻端点的合法及非法浮点时间，默认拒绝越界与可选截断，直接／逆向／多坐标系链路查询及成功查询后的时间状态恢复。
+- 全仓库检查：NumPy 2.5.3 下 898 项通过、3 项因缺少可选 Open3D 跳过、1 项已有 test_matrix_requires_renormalization 在 1e-16 容差处失败；在未修改源文件上确认同一失败，NumPy 1.26.4 下也失败。本次未修改旋转实现或该测试。Black、Ruff、CI 阻断 flake8 及 Git 空白检查通过。
+- 边界：验证 Python 刚体变换、ScLERP 与坐标系图接口，未运行真实机器人、ROS 节点或 SLAM 端到端管线；上游 CI 与合并状态以 PR 为准。
