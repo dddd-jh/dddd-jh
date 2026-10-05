@@ -13,6 +13,7 @@
 | [KISS-ICP](https://github.com/PRBonn/kiss-icp) | 激光里程计与点云运动畸变补偿 | 2026-06-09 | 传感器数据接入、逐点时间戳与点云预处理 |
 | [RKO-LIO](https://github.com/PRBonn/rko_lio) | 激光惯导里程计 | 2026-09-29 | 激光／IMU 时间排序、数据读取与传感器协同 |
 | [KISS-SLAM](https://github.com/PRBonn/kiss-slam) | 激光 SLAM、局部地图与栅格地图导出 | 2026-08-11 | 地图坐标、文件导出与机器人系统接口 |
+| [MapClosures](https://github.com/PRBonn/MapClosures) | 点云密度地图闭环检测与位姿配准 | 2026-08-14 | 二维配准、刚体变换与几何回归测试 |
 | [GLIM](https://github.com/koide3/glim) | 点云定位与建图 | 2026-09-06 | 数据导入、评测与定位模块；需要对应运行环境 |
 | [rosbag2](https://github.com/ros2/rosbag2) | ROS 2 数据记录与回放 | 2026-10-01 | 时间戳、消息与回放问题；需要匹配的 ROS 2 环境 |
 
@@ -73,3 +74,12 @@
 - 测试结构：将 PNG／YAML 序列化移入可独立测试的模块，保留原有 mapper 方法入口，并在上游 Python CI 中运行新增测试。
 - 验证：13 项回归测试在原导出方向下 10 项失败，修复后全部通过。实际写入和读取 PNG／YAML，核对非方形及单轴地图尺寸、正负原点、两种分辨率和占用／空闲／未知单元的世界坐标；Black、isort、Python 编译及 Git 空白检查通过。
 - 边界：本机验证文件序列化与 ROS 地图坐标约定，未启动 ROS 地图服务器、运行原生 SLAM 管线或完整源码构建；上游 CI 需要维护者批准后运行。
+
+## 第六项贡献：MapClosures 二维闭环配准旋转修复
+
+- PR：[PRBonn/MapClosures #118](https://github.com/PRBonn/MapClosures/pull/118)，2026-10-05 提交，待评审。
+- 问题：二维 Kabsch 配准用整个矩阵取负来修正反射，但二维矩阵整体取负不会改变行列式符号；平移使用的矩阵又与赋给变换的矩阵不同。原实现可返回反射位姿，或将合法旋转对应点全部排除后返回 NaN 平移。
+- 修改：在 SVD 中仅翻转较小奇异值对应的方向，保证旋转行列式为 +1，并使用修正后的同一旋转计算平移。
+- 验证：通过公开 RANSAC 接口新增 9 项原生 C++ 测试，覆盖六种旋转角度、非共线对应点及零／非零参考中心的反射输入。相同测试原实现 5 项失败，修复后全部通过；核对有限输出、内点数、旋转正交性、行列式、中心映射及预期位姿。
+- 构建与检查：Windows／Clang 18.1.6／Eigen 3.4.0，独立 Release CMake 目标编译实际配准源文件，并使用提交的 CTest 注册代码连续运行五轮；clang-format 14、cmake-format、YAML 及 Git 空白检查通过。测试默认关闭，在上游两组 C++ CI 构建中启用。
+- 边界：本机未构建完整 OpenCV／Sophus 依赖库或运行完整地图闭环管线；上游 CI 当前需要维护者批准后运行，合并状态以 PR 为准。
