@@ -115,4 +115,5 @@
 - 验证：Windows／Python 3.10.22、uv 冻结依赖环境。50 项新增回归测试原实现 24 项失败，修复后全部通过；受影响的 ROS 2 包共 69 项通过。
 - 覆盖：Time／Duration 两种类型、负／零／正秒数、int32 上下界、大小端 CDR、显式嵌套定义，以及 NONE／LZ4／ZSTD 三种压缩下实际 MCAP 写入与读取；预期字节由独立 struct 编码构造。
 - 仓库检查：MCAP 核心 39 项、Protobuf 支持 7 项、ROS 1 支持 4 项测试通过，加上 ROS 2 共 119 项。四个包的 flake8／Black／isort／Pyright、源码包及 wheel 构建通过；使用官方 LFS 数据并核对 SHA-256 与文件大小后运行数据读取测试。
-- 边界：已有核心 test_make_not_seeking 管道测试在 Windows 下阻塞，最终运行排除这 1 项；未在本机验证其 POSIX 行为、跨语言一致性测试或 ROS 节点。新增测试由现有 Python CI 自动发现，提交时尚无上游 CI 结果，合并状态以 PR 为准。
+- 上游验证：Linux Python CI 的 make lint、make test、make examples、make build 全部通过；跨语言 Python 一致性检查也已通过。验证记录：[Python CI](https://github.com/foxglove/mcap/actions/runs/37336646143/job/111853004457)、[Python 一致性](https://github.com/foxglove/mcap/actions/runs/37336646143/job/111853004886)。
+- 边界：已有核心 test_make_not_seeking 管道测试在 Windows 下阻塞，最终本机运行排除这 1 项；未在本机验证其 POSIX 行为、跨语言一致性测试或 ROS 节点。新增测试由现有 Python CI 自动发现；其他 CI 和合并状态以 PR 为准。

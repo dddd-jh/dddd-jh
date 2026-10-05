@@ -42,4 +42,4 @@
 - 验证：12 项原生 C++／GoogleTest 回归测试原实现 8 项失败，修复后全部通过，独立 Release CMake／CTest 通过。测试自动纳入仓库现有 CI；本机未构建完整 GTSAM／CUDA 库或运行完整点云配准套件。
 
 - **[MCAP #1862](https://github.com/foxglove/mcap/pull/1862) · 已提交，待评审：** 修复 ROS 2 Time／Duration 内置备用定义将秒数视为无符号整数的问题，使负秒数正确编码和解码；显式嵌套定义保留现有行为。
-- 验证：50 项新增测试原实现 24 项失败，修复后全部通过；四个 Python 包共 119 项测试通过，格式、类型检查及源码包／wheel 构建通过。1 项 Windows 管道测试未完成并被排除；本机未运行 ROS 节点或跨语言一致性测试，上游 CI 状态见 PR。
+- 验证：50 项新增测试原实现 24 项失败，修复后全部通过；四个 Python 包共 119 项测试通过，格式、类型检查及源码包／wheel 构建通过。1 项 Windows 管道测试未完成并被排除；本机未运行 ROS 节点或跨语言一致性测试。上游 Linux Python CI 的完整测试、示例、lint、build 及跨语言 Python 一致性检查已通过，其他 CI 状态见 PR。
