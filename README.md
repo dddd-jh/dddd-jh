@@ -50,7 +50,7 @@
 - **[pytransform3d #385](https://github.com/dfki-ric/pytransform3d/pull/385) · 已合并：** 修复默认时序位姿查询在最后一个采样时间发生数组越界的问题，保留真正越界时间的拒绝规则。
 - 验证：21 项新增回归用例原实现 10 项失败，修复后全部通过；NumPy 1.x／2.x 下全部 49 项变换管理器测试通过。全仓库 898 项通过、3 项可选 Open3D 测试跳过，1 项原有旋转矩阵精度测试在本机失败，已在未修改源码上核对并说明；Black、Ruff 与 CI 阻断 flake8 检查通过。
 
-- **[pytransform3d #386](https://github.com/dfki-ric/pytransform3d/pull/386) · 已提交，待评审：** 修复时序坐标变换查询异常后污染管理器当前时间的问题，确保后续正常查询使用原时间，保留原异常。
+- **[pytransform3d #386](https://github.com/dfki-ric/pytransform3d/pull/386) · 已合并：** 修复时序坐标变换查询异常后污染管理器当前时间的问题，确保后续正常查询使用原时间，保留原异常。
 - 验证：15 项新增回归用例原实现 13 项失败，修复后全部通过；NumPy 1.x／2.x 下全部 43 项变换管理器测试通过。全仓库 892 项通过、3 项可选 Open3D 测试跳过、1 项原有精度测试失败；Black、Ruff 与 CI 阻断 flake8 检查通过。
 
 - **[KISS-ICP #513](https://github.com/PRBonn/kiss-icp/pull/513) · 已提交，待评审：** 修复读取组织点云时忽略 row_step 的问题，跳过行末填充字节，避免后续行坐标及逐点时间戳被错误解析；连续点云保留零拷贝读取。
@@ -64,3 +64,6 @@
 
 - **[KISS-ICP #514](https://github.com/PRBonn/kiss-icp/pull/514) · 已提交，待评审：** 修复 HeLiPR 二进制扫描在记录完整时丢失最后一点的问题，避免末尾时间戳丢失影响其他点的时间归一化；保留忽略不完整尾记录的规则。
 - 验证：20 项新增回归测试原实现 15 项失败、5 项通过，修复后全部通过。NumPy 1.x／2.x 下完整 Python 测试均为 21 项通过；五种布局的 10 组生成文件经发布版原生去畸变接口核对解析结果，Black、isort 通过。未重新构建原生库、运行真实 HeLiPR 基准或 ROS／硬件管线；上游 CI 待维护者批准。
+
+- **[manif #345](https://github.com/artivis/manif/pull/345) · 已提交，待评审：** 修复 SO(3) 小角度对数对等价四元数 q／-q 返回相反旋转向量的问题，使 SE(3) 位姿对数和 Jacobian 保持符号一致。
+- 原生 C++ 验证：4 项 float／double 新测试覆盖 48 组场景，原实现全部失败、修复后通过；完整核心套件 17 个 CTest 程序、5,064 项 GoogleTest 全部通过，C++11 独立解析值与位姿往返检查通过。未运行可选 Ceres／autodiff、Python 绑定或 ROS／硬件管线；上游 CI 待维护者批准。

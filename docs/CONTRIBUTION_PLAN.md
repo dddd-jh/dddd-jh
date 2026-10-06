@@ -146,7 +146,8 @@
 
 ## 第十二项贡献：pytransform3d 异常查询后的时间状态恢复
 
-- PR：[dfki-ric/pytransform3d #386](https://github.com/dfki-ric/pytransform3d/pull/386)，2026-10-06 提交至 develop，待评审。
+- PR：[dfki-ric/pytransform3d #386](https://github.com/dfki-ric/pytransform3d/pull/386)，2026-10-06 提交至 develop，同日被维护者合并。
+- 评审跟进：维护者再次感谢贡献，已在 [PR 回复](https://github.com/dfki-ric/pytransform3d/pull/386#issuecomment-6013002373)致谢；#385 和 #386 均被列入已合并的 [3.17.0 开发分支更新说明](https://github.com/dfki-ric/pytransform3d/pull/371)，不据此声称 PyPI 已发布该版本。
 - 问题：get_transform_at_time 临时设置当前时间，但仅在查询成功后恢复；未知／不连通坐标系、超出时间范围或自定义变换异常会留下失败查询时间，后续普通查询使用错误时间或继续失败。
 - 修改：在 finally 中恢复原 current_time，保持成功查询返回值、原异常对象和标量／数组时间类型与对象，不缓存或吞掉异常。
 - 验证：Windows／Python 3.12.14。15 项新增回归用例原实现 13 项失败，修复后全部通过；NumPy 2.5.3／SciPy 1.18.1 和 NumPy 1.26.4／SciPy 1.15.3 下全部 43 项变换管理器测试通过。
@@ -205,3 +206,16 @@
 - 上游状态：[Python API CI](https://github.com/PRBonn/kiss-icp/actions/runs/37428708085) 及可见工作流均为 action_required，等待维护者批准运行，尚未合并。
 - 边界：测试数据为按官方布局生成的磁盘文件，未下载真实 HeLiPR 录制数据、从源码重新构建完整原生库或运行 ROS 节点／机器人硬件／端到端里程计基准，不声称定位精度提升。
 - 邮件与评审：刷新网易邮箱并核对此前 15 个 PR；pytransform3d #385 已合并并收到维护者致谢，已回复感谢审阅和合并。其他 PR 无新的人工问题；目前累计 16 项 PR，其中 3 项已合并。
+
+## 第十七项贡献：manif 小角度 SO(3) 对数四元数符号修复
+
+- PR：[artivis/manif #345](https://github.com/artivis/manif/pull/345)，2026-10-06 基于官方 devel 的 65166b3b 独立提交，待评审。
+- 社区与方向：manif 是面向机器人状态估计的 C++ 李群库。本次贡献涉及 SLAM／定位中的旋转增量、SE(3) 位姿误差与解析 Jacobian。
+- 问题：SO3Base::log 的一般角度分支根据 w 的符号选择主值分支，小角度分支却固定乘以 2。对表示相同旋转的 q 和 -q，后者返回相反旋转向量；例如绕 X 轴 1e-8 弧度的四元数全部取反后，原对数为 [-1e-8, 0, 0]，预期为 [1e-8, 0, 0]。SE(3) 的旋转／平移切向量及对数 Jacobian 也受影响。
+- 修改：小角度系数在 w 小于 0 时选择 -2，否则为 2，与一般角度分支一致；保持阈值、一般角度计算、输入四元数和公开 API，补充解释主值分支的代码注释。
+- 回归验证：在已有 SO3 和 SE3 测试文件中增加 float／double 类型测试，共 4 项测试、48 组轴／角度／类型／群组合；原实现 4 项均失败，修复后全部通过。覆盖正负单位四元数、轴向与非轴向旋转、小非零角度、阈值两侧；核对同一旋转／变换、相同切向量和 Jacobian、exp(log()) 往返，以及 SO3 的解析旋转向量。
+- 完整核心验证：Windows／Clang 18.1.6、Eigen 3.4.0、GoogleTest 1.15.2；C++14 Debug 与基础 CPU 指令集构建。全部 17 个 CTest 程序、5,064 项 GoogleTest 通过，0 跳过、0 禁用；包括其他核心李群及 Bundle 测试。
+- C++11 验证：单独编译 float／double 解析小角度和非零平移 SE3 往返检查，同一程序分别包含原始与修复头文件；原始版本失败，修复版本通过。该检查独立于 GoogleTest，不需要将库的最低标准升级到 C++14。
+- 工程与上游：只改动一个库头文件及两个已有测试文件，Git 空白检查通过；单提交 9df3f60，不含其他社区补丁，测试自动进入已有跨平台 CI。[build-and-test](https://github.com/artivis/manif/actions/runs/37442637194)、release 和 documentation 均为 action_required，等待维护者批准运行，尚未合并。
+- 边界：本机完整构建和运行核心 C++ 测试，未运行可选 Ceres／autodiff、Python 绑定、ROS 节点、机器人硬件或端到端 SLAM 基准，不声称实测定位精度提升。
+- 邮件与评审：刷新网易邮箱并核对前 16 个 PR；pytransform3d #386 新近合并并收到维护者致谢，已回复感谢审阅、合并及更新说明中的贡献归属。其他 PR 没有新的人工提问；目前累计 17 项 PR，其中 4 项已合并。
