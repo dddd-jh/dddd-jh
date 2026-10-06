@@ -135,7 +135,8 @@
 
 ## 第十一项贡献：pytransform3d 时序位姿末尾查询越界修复
 
-- PR：[dfki-ric/pytransform3d #385](https://github.com/dfki-ric/pytransform3d/pull/385)，2026-10-06 提交至贡献指南要求的 develop 分支，待评审。
+- PR：[dfki-ric/pytransform3d #385](https://github.com/dfki-ric/pytransform3d/pull/385)，2026-10-06 提交至 develop，同日被维护者合并。
+- 评审跟进：维护者感谢贡献；已通过 [PR 回复](https://github.com/dfki-ric/pytransform3d/pull/385#issuecomment-6011278898)致谢，GitHub 邮件通知与该讨论属于同一线程。
 - 问题：默认 time_clipping=False 时，查询恰好等于最后一个采样时间通过范围校验，但后继采样索引越过数组末尾，标量、批量及坐标系链路查询均抛出 IndexError；单样本序列查询唯一时间也失败。
 - 修改：仅将后继采样索引限制到最后一个有效样本；最后时间对应前后同一采样点，沿用已有零插值比例返回末尾位姿。真正超出范围的时间仍按既有规则抛出 ValueError，不开启外推。
 - 验证：Windows／Python 3.12.14。21 项新增回归用例原实现 10 项失败，修复后全部通过；NumPy 2.5.3／SciPy 1.18.1 及 NumPy 1.26.4／SciPy 1.15.3 下全部 49 项变换管理器测试通过，包括 Graphviz PNG 导出。
@@ -191,3 +192,16 @@
 - 上游状态：[CI](https://github.com/rai-opensource/spatialmath-python/actions/runs/37426911749) 显示 action_required，等待维护者批准运行；尚未合并。另核对前一项 MCAP #1867，全部已执行检查已通过，部署／review 检查按工作流规则跳过。
 - 边界：验证机器人姿态数学库及其完整 Python 测试，未运行 ROS 节点、机器人硬件或端到端 SLAM；不声称已改善实测定位精度。
 - 邮件与评审：2026-10-06 刷新网易邮箱并核对此前 14 个 PR，无新的人工提问；先前合并致谢与 gtsam_points CI 分析回复已处理，无需重复回复自动通知。
+
+## 第十六项贡献：KISS-ICP HeLiPR 完整末尾点读取修复
+
+- PR：[PRBonn/kiss-icp #514](https://github.com/PRBonn/kiss-icp/pull/514)，2026-10-06 基于官方 main 的 1ffa7d75 独立提交，待评审。
+- 问题：当文件恰好包含整数个完整记录时，get_data 使用严格小于边界，丢弃最后一个点；单记录文件因此在 np.stack([]) 处失败。丢失末尾时间戳还会使剩余点使用错误的时间归一化范围。
+- 修改：将循环边界的 < 改为 <=；仅读取剩余字节至少为 chunk_size 的记录，保留 #338 为不完整尾记录引入的处理规则，不变更空文件、单时间戳归一化或其他读取策略。
+- 回归验证：20 项新增参数化测试，原实现 15 项失败、5 项通过，修复后全部通过。覆盖 Avia、Aeva 原始／带 intensity 布局、Ouster、Velodyne 的单点与三点文件、不完整尾字节、全部字段，以及真实磁盘目录／GT 文件加载后的两帧公开 dataset 接口。
+- 仓库验证：Windows／Python 3.12.14；NumPy 2.5.3 及 NumPy 1.26.4 下完整 Python 测试均为 21 项通过；上游固定版本 Black 23.1.0、isort 5.12.0 及 Git 空白检查通过。
+- 原生接口验证：五种布局各两帧，共 10 组生成的二进制扫描文件。当前源码读取器与发布版 KISS-ICP 1.3.0 Windows 原生 Preprocessor 联合验证，纯平移去畸变结果与解析值一致；原实现均丢失末尾点，并使中间点的归一化时间与去畸变位置错误。两套 NumPy 环境结果一致。
+- 独立性：只改动 HeLiPR 读取器的一行条件并新增专用测试文件，直接基于官方 main，不包含或依赖 #512／#513；测试自动纳入现有 Python API CI。
+- 上游状态：[Python API CI](https://github.com/PRBonn/kiss-icp/actions/runs/37428708085) 及可见工作流均为 action_required，等待维护者批准运行，尚未合并。
+- 边界：测试数据为按官方布局生成的磁盘文件，未下载真实 HeLiPR 录制数据、从源码重新构建完整原生库或运行 ROS 节点／机器人硬件／端到端里程计基准，不声称定位精度提升。
+- 邮件与评审：刷新网易邮箱并核对此前 15 个 PR；pytransform3d #385 已合并并收到维护者致谢，已回复感谢审阅和合并。其他 PR 无新的人工问题；目前累计 16 项 PR，其中 3 项已合并。
