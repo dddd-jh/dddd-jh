@@ -67,3 +67,6 @@
 
 - **[manif #345](https://github.com/artivis/manif/pull/345) · 已提交，待评审：** 修复 SO(3) 小角度对数对等价四元数 q／-q 返回相反旋转向量的问题，使 SE(3) 位姿对数和 Jacobian 保持符号一致。
 - 原生 C++ 验证：4 项 float／double 新测试覆盖 48 组场景，原实现全部失败、修复后通过；完整核心套件 17 个 CTest 程序、5,064 项 GoogleTest 全部通过，C++11 独立解析值与位姿往返检查通过。未运行可选 Ceres／autodiff、Python 绑定或 ROS／硬件管线；上游 CI 待维护者批准。
+
+- **[pytransform3d #387](https://github.com/dfki-ric/pytransform3d/pull/387) · 已提交，待评审：** 修复批量四元数乘法在输出数组与输入重叠时破坏姿态组合结果的问题，支持原地计算和连续／非连续重叠视图，保留输出对象与原有计算公式。
+- 验证：28 项新增测试原实现 22 项失败，修复后通过；完整批量旋转模块 151 项通过。NumPy 1.x／2.x 下全库均为 941 项通过、3 项可选测试跳过、1 项已在原基线复现的矩阵极严容差测试失败；每套环境 512 次独立 SciPy 比较及 float32／float64 的 32 步原地姿态组合通过。Black、Ruff、CI 阻断 flake8 与 Git 空白检查通过；未运行 ROS／硬件管线，PR 尚无 CI 检查记录。
