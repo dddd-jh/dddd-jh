@@ -174,5 +174,6 @@
 - 仓库验证：ROS2 包全部 26 项测试通过；MCAP 核心 39 项、Protobuf 支持 7 项、ROS1 支持 4 项，共 76 项通过。已有 Windows test_make_not_seeking 管道测试因之前在本机阻塞而排除。官方 LFS 测试数据经 SHA-256 校验，运行后恢复原指针。
 - 独立实现验证：将两种自定义定位消息依次写入同一话题的真实磁盘文件，覆盖 NONE／ZSTD／LZ4 压缩。rosbags 0.11.5 独立 CDR 解码器在原实现上均拒绝定义与数据不匹配的消息，修复后正确读回三个定位结果及新增 frame_id。该外部检查使用不同类型名；同名多版本由 MCAP 回归测试验证，rosbags 本身按名称解析定义。
 - 工程检查：Black、isort、flake8、pyright、Git 空白检查及隔离环境的 ROS2 源码包／wheel 构建通过。基于官方 f123d254 独立提交，不包含或依赖 #1862；测试自动纳入已有 Python CI。
+- 上游验证：[Linux Python CI](https://github.com/foxglove/mcap/actions/runs/37422590642/job/112135037172) 的完整测试、lint、示例和四包构建已通过，[Python 跨语言一致性检查](https://github.com/foxglove/mcap/actions/runs/37422590642/job/112135037233)也已通过；其他语言检查状态以 PR 为准。
 - 边界：验证 ROS2 CDR 与 MCAP 日志读写接口，未运行 ROS 节点、硬件或本机跨语言一致性测试；上游 CI 运行结果及合并状态以 PR 为准。
 - 邮件与评审：2026-10-06 刷新网易邮箱并检查此前 13 个 PR，无新人工问题，已有合并致谢和 CI 分析回复无需重复发送。
