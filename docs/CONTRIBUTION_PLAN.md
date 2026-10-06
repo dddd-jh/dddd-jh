@@ -177,3 +177,17 @@
 - 上游验证：[Linux Python CI](https://github.com/foxglove/mcap/actions/runs/37422590642/job/112135037172) 的完整测试、lint、示例和四包构建已通过，[Python 跨语言一致性检查](https://github.com/foxglove/mcap/actions/runs/37422590642/job/112135037233)也已通过；其他语言检查状态以 PR 为准。
 - 边界：验证 ROS2 CDR 与 MCAP 日志读写接口，未运行 ROS 节点、硬件或本机跨语言一致性测试；上游 CI 运行结果及合并状态以 PR 为准。
 - 邮件与评审：2026-10-06 刷新网易邮箱并检查此前 13 个 PR，无新人工问题，已有合并致谢和 CI 分析回复无需重复发送。
+
+## 第十五项贡献：SpatialMath 四元数对数小旋转精度修复
+
+- PR：[rai-opensource/spatialmath-python #237](https://github.com/rai-opensource/spatialmath-python/pull/237)，2026-10-06 基于官方 master 的 2de78013 提交，待评审。
+- 社区与方向：SpatialMath 提供机器人刚体姿态、四元数及李群运算；本次贡献对应 SLAM／定位中姿态增量与误差表示的数值计算。
+- 问题：UnitQuaternion.Rx(1e-9).log().v 原来返回零，预期为 [5e-10, 0, 0]。acos(s / norm(q)) 在比值舍入为 1 时丢失角度，对稍大旋转也损失精度；标量、批量和非单位四元数均受影响。
+- 修改：两个路径均以 atan2(norm(v), s) 计算主值角度，保留标量 log(norm(q))、原有零向量判定和负标量分支，不改变四元数的符号规范化或输入对象。
+- 回归验证：新增 3 个方法，含 12 项子测试。原实现 8 项标量子测试、2 项批量子测试及负实轴精度检查失败；修复后通过。覆盖正负 1e-12 至 1e-4 弧度旋转、普通角度、单位与缩放四元数、标量／批量一致性、exp(log(q)) 往返、输入保留及接近负实轴的主值角度。
+- 仓库验证：Windows／Python 3.12.14；NumPy 2.5.3／SciPy 1.18.1 和 NumPy 1.26.4／SciPy 1.15.3 下均完整执行 350 项测试通过、3 项跳过，并通过全部 12 项新子测试。使用 Agg 后端和上游 CI 的超时选项。
+- 独立实现验证：100 个固定种子、不同轴和角度的旋转向量，经 SciPy Rotation 生成四元数并独立核对。分别验证单位标量、三倍缩放标量及单位批量，共 300 次比较；原实现 270 次超出 1e-13 相对误差阈值，修复后全部通过，最大相对误差约 3.6e-16，两套依赖结果一致。
+- 工程检查：Black 23.10.0、flake8 的 E9／F63／F7／F82 语法及未定义名称检查、Git 空白检查通过；隔离环境源码包和 wheel 构建通过。只改动 quaternion.py 和已有四元数测试文件，测试由现有 CI 自动发现。
+- 上游状态：[CI](https://github.com/rai-opensource/spatialmath-python/actions/runs/37426911749) 显示 action_required，等待维护者批准运行；尚未合并。另核对前一项 MCAP #1867，全部已执行检查已通过，部署／review 检查按工作流规则跳过。
+- 边界：验证机器人姿态数学库及其完整 Python 测试，未运行 ROS 节点、机器人硬件或端到端 SLAM；不声称已改善实测定位精度。
+- 邮件与评审：2026-10-06 刷新网易邮箱并核对此前 14 个 PR，无新的人工提问；先前合并致谢与 gtsam_points CI 分析回复已处理，无需重复回复自动通知。

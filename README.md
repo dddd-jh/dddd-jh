@@ -58,3 +58,6 @@
 
 - **[MCAP #1867](https://github.com/foxglove/mcap/pull/1867) · 已提交，待评审：** 修复 ROS2 写入器在同一话题换用消息定义时错误复用旧通道的问题，避免数据按错误定义解码；返回原定义时复用原通道。
 - 验证：7 项新增回归用例原实现 6 项失败，修复后全部通过；ROS2 包全部 26 项、四个 Python 包共 76 项测试通过，1 项已有 Windows 管道测试被排除。3 组三种压缩的真实 MCAP 定位消息文件经独立 rosbags 解码器验证；格式、类型检查及源码包／wheel 构建通过。未运行 ROS 节点或硬件管线；[上游 Linux Python CI](https://github.com/foxglove/mcap/actions/runs/37422590642/job/112135037172) 的完整测试、lint、示例及构建通过，Python 一致性检查也通过，其他 CI 状态见 PR。
+
+- **[SpatialMath #237](https://github.com/rai-opensource/spatialmath-python/pull/237) · 已提交，待评审：** 修复四元数对数使用 acos 导致小角度姿态增量丢失或失真的问题，标量与批量接口改用稳定角度计算，保持负标量主值分支及原有零向量规则。
+- 验证：新增 3 个回归测试方法，包含 12 项子测试；原实现 8 项标量子测试、2 项批量子测试及负实轴精度检查失败，修复后全部通过。NumPy 1.x／2.x 下完整测试均为 350 项通过、3 项跳过；300 组独立 SciPy 对照检查通过，Black、语法检查及源码包／wheel 构建通过。未运行 ROS 或机器人硬件，上游 CI 待维护者批准。
