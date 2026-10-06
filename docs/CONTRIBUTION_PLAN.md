@@ -245,3 +245,16 @@
 - 上游状态：PR 未合并，创建后的 statusCheckRollup 为空，无 CI 通过声明。
 - 边界：没有运行 ROS 节点、硬件或端到端 SLAM 基准，不声称定位精度提升。
 - 邮件与评审：刷新网易邮箱并检查前 18 个 PR 的评论、行内评审和状态，无新人工问题，未重复发送已处理回复。目前累计 19 项 PR，其中 4 项已合并。
+
+## 第二十项贡献：KISS-ICP 点云端序读取保留消息数据
+
+- PR：[PRBonn/kiss-icp #515](https://github.com/PRBonn/kiss-icp/pull/515)，2026-10-06，待评审。
+- 问题：read_points 对与主机端序不同的点云调用 byteswap(inplace=True)，其数组引用 cloud.data。只读 bytes 或 rosbags 解码出的只读 NumPy 数组因此报错；可写 bytearray／NumPy 缓冲区则被修改，第二次读取坐标不同，选择部分字段时还会只交换部分记录。
+- 修改：仅将一行字节交换改为 inplace=False；反端序分支使用交换后的副本，同端序路径保留现有零拷贝行为。消息数据和端序标志保持一致，不影响后续消费者。
+- 回归验证：新增 36 项参数化用例，原实现 16 项失败、20 项通过，修复后全部通过。覆盖大小端、bytes／bytearray／NumPy 缓冲区、全部／部分字段、float32 坐标、float64 时间戳、uint16 ring、重复读取、点云提取、uvs 选择、空点云及同端序内存共享。Windows／Python 3.12.14 下 NumPy 2.5.3 与 NumPy 1.26.4 的完整 Python 套件各 37 项通过。
+- 日志与原生验证：NumPy 2.x 下生成 6 组 ROS1 bag／ROS2 SQLite／ROS2 MCAP 文件，分别含大小端 PointCloud2 负载。通过源代码 RosbagDataset 读取、原始消息缓冲区保留、同消息反复解析、非坐标字段读取、数据集 reset 和发布版原生去畸变的解析运动对照；原实现会拒绝三组反端序只读 rosbags 数据。这些是生成测试文件，不是传感器采集基准。
+- 兼容性验证：仅在本机内存中组合 #512 NaN 时间戳过滤、#513 行填充修复与本轮修复，两套 NumPy 环境各 75 项 Python 测试通过；另有六组大小端与行填充组合验证重复读取和消息保留。公开分支保持独立，不含其他待合并 PR。
+- 工程：Black、isort 与 Git 空白检查通过；仅改现有读取器一行，新增独立测试文件。基于官方 main 的 1ffa7d7，单提交 0a59fd9；使用本机 keyring 认证的官方 GitHub API 发布，并核对远端树与本地一致。
+- 上游状态：PR 未合并；ROS nodes、Style Check、Python API、C++ API、Publish to PyPI.org 工作流均显示 action_required，需维护者批准运行，不表述为 CI 已通过。
+- 边界：使用发布版原生绑定运行去畸变与导入测试，未重建完整 C++／Python 包，没有运行 ROS 节点、硬件或完整 SLAM 基准，不声称实测定位精度提升。
+- 邮件与评审：刷新网易邮箱并检查前 19 个 PR 的评论、行内评审和状态，无新的人工问题，未重复发送已处理回复。目前累计 20 项 PR，其中 4 项已合并。
