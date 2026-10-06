@@ -39,7 +39,7 @@
 - **[GLIM #329](https://github.com/koide3/glim/pull/329) · 已提交，待评审：** 修复全局定位时间晚于已有里程计时轨迹管理器越界读取的问题；保留当前全局变换及插值样本，允许数据补齐后再次更新。
 - 验证：启用容器边界检查时，8 项原生 C++ 测试中原实现 6 项越界终止，修复后全部通过。覆盖最新时间边界、重复更新、数据补齐、正常插值及历史样本保留；新增 Eigen 独立测试工程与 GCC／Clang CI，本机未运行完整 GLIM 或 ROS 管线。
 - **[gtsam_points #106](https://github.com/koide3/gtsam_points/pull/106) · 已提交，待评审：** 修复 KNN／半径搜索结果引用临时索引回调产生的悬空引用，使结果对象持有回调，保留引用捕获的行为。
-- 验证：12 项原生 C++／GoogleTest 回归测试原实现 8 项失败，修复后全部通过，独立 Release CMake／CTest 通过。测试自动纳入仓库现有 CI；本机未构建完整 GTSAM／CUDA 库或运行完整点云配准套件。
+- 验证：12 项原生 C++／GoogleTest 回归测试原实现 8 项失败，修复后全部通过，独立 Release CMake／CTest 通过。测试自动纳入仓库现有 CI；[上游 Linux/GCC](https://github.com/koide3/gtsam_points/actions/runs/37332671677/job/112064704547) 完整构建及全部 98 项 CTest 已通过，包括新增 12 项测试。本机未构建完整 GTSAM／CUDA 库；上游 CUDA 构建被中断，其余取消配置仍未验证。
 
 - **[MCAP #1862](https://github.com/foxglove/mcap/pull/1862) · 已提交，待评审：** 修复 ROS 2 Time／Duration 内置备用定义将秒数视为无符号整数的问题，使负秒数正确编码和解码；显式嵌套定义保留现有行为。
 - 验证：50 项新增测试原实现 24 项失败，修复后全部通过；四个 Python 包共 119 项测试通过，格式、类型检查及源码包／wheel 构建通过。1 项 Windows 管道测试未完成并被排除；本机未运行 ROS 节点或跨语言一致性测试。上游 Linux Python CI 的完整测试、示例、lint、build 及跨语言 Python 一致性检查已通过，其他 CI 状态见 PR。
@@ -49,3 +49,6 @@
 
 - **[pytransform3d #385](https://github.com/dfki-ric/pytransform3d/pull/385) · 已提交，待评审：** 修复默认时序位姿查询在最后一个采样时间发生数组越界的问题，保留真正越界时间的拒绝规则。
 - 验证：21 项新增回归用例原实现 10 项失败，修复后全部通过；NumPy 1.x／2.x 下全部 49 项变换管理器测试通过。全仓库 898 项通过、3 项可选 Open3D 测试跳过，1 项原有旋转矩阵精度测试在本机失败，已在未修改源码上核对并说明；Black、Ruff 与 CI 阻断 flake8 检查通过。
+
+- **[pytransform3d #386](https://github.com/dfki-ric/pytransform3d/pull/386) · 已提交，待评审：** 修复时序坐标变换查询异常后污染管理器当前时间的问题，确保后续正常查询使用原时间，保留原异常。
+- 验证：15 项新增回归用例原实现 13 项失败，修复后全部通过；NumPy 1.x／2.x 下全部 43 项变换管理器测试通过。全仓库 892 项通过、3 项可选 Open3D 测试跳过、1 项原有精度测试失败；Black、Ruff 与 CI 阻断 flake8 检查通过。
