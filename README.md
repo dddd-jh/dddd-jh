@@ -25,7 +25,7 @@
 
 [贡献计划](docs/CONTRIBUTION_PLAN.md) · [公开 PR 记录](https://github.com/pulls?q=is%3Apr+author%3Adddd-jh)
 
-另有[上游修复验证记录](docs/VALIDATION_REVIEWS.md)：针对 GLIM 用户报告的新版 fmt 编译问题，为其他作者的现有补丁提供三个版本的独立 C++ 兼容性验证；不计入个人提交 PR 数。
+另有[上游评审与验证记录](docs/VALIDATION_REVIEWS.md)：为 evo 现有时间匹配优化 PR 提供兼容性补丁及三个回归用例，以公开 TUM 轨迹核对匹配结果；为 GLIM 现有编译修复提供三个 fmt 版本的独立 C++ 验证。这类工作不计入个人新提交 PR 数。
 
 - **[evo #786](https://github.com/MichaelGrupp/evo/pull/786) · 已合并：** 在已有遍历中提取轨迹坐标系，移除 ROS bag 的第二次扫描和额外原始消息缓存；增加 ROS 1／ROS 2 回归测试。
 - 本机验证：126 项测试与 2 项子测试通过，Black 和 mypy 检查通过。环境及验证范围见 PR。
