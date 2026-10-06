@@ -21,20 +21,22 @@
 
 ## 开源工作
 
+截至 2026-10-06：20 项已提交 PR，4 项已合并、8 项待评审、8 项已关闭未合并。关闭记录保留为工程尝试，不作为上游已接受成果。
+
 [贡献计划](docs/CONTRIBUTION_PLAN.md) · [公开 PR 记录](https://github.com/pulls?q=is%3Apr+author%3Adddd-jh)
 
 - **[evo #786](https://github.com/MichaelGrupp/evo/pull/786) · 已合并：** 在已有遍历中提取轨迹坐标系，移除 ROS bag 的第二次扫描和额外原始消息缓存；增加 ROS 1／ROS 2 回归测试。
 - 本机验证：126 项测试与 2 项子测试通过，Black 和 mypy 检查通过。环境及验证范围见 PR。
 - **[small_gicp #141](https://github.com/koide3/small_gicp/pull/141) · 已提交，待评审：** 修复串行、OpenMP、TBB 体素降采样错误保留越界点的问题；新增 16 项回归测试，覆盖有效坐标边界、混合点云及颜色平均。
 - 本机原生 C++ 验证：相同测试修改前 7 项失败，修改后 16 项全部通过，包括 OpenMP 1／4 线程与真实 TBB 运行。完整上游测试状态见 PR。
-- **[KISS-ICP #512](https://github.com/PRBonn/kiss-icp/pull/512) · 已提交，待评审：** 修复过滤 NaN 点后逐点时间戳错位的问题，避免运动畸变补偿使用错误时间戳。
+- **[KISS-ICP #512](https://github.com/PRBonn/kiss-icp/pull/512) · 已关闭，未合并：** 修复过滤 NaN 点后逐点时间戳错位的问题，避免运动畸变补偿使用错误时间戳。
 - 验证：19 项新增回归测试修改前 12 项失败，修改后全部通过；本机 20 项 Python 测试及 6 组真实 ROS 1／ROS 2 bag 与原生畸变补偿检查通过。原生扩展使用发布版 Windows wheel，完整上游构建状态见 PR。
 - **[RKO-LIO #189](https://github.com/PRBonn/rko_lio/pull/189) · 已合并：** 修复激光／IMU 排序器在输入结束时丢弃已有 IMU 覆盖的缓存激光帧的问题，保留覆盖不足尾帧的处理规则。
 - 验证：11 项新增排序测试修改前 3 项失败，修改后全部通过；全部 53 项 Python 测试及 Ruff 检查通过。本机使用发布版 Windows 原生扩展，完整源码构建与 ROS 运行状态见 PR。
 - 评审跟进：维护者认可修复并希望只保留包内改动，PR 已精简为一行修复，2026-10-05 已被上游合并；原回归用例留存在本机。
-- **[KISS-SLAM #60](https://github.com/PRBonn/kiss-slam/pull/60) · 已提交，待评审：** 修复二维栅格导出为 ROS 地图时的图像尺寸与方向错误，保留栅格的世界坐标位置。
+- **[KISS-SLAM #60](https://github.com/PRBonn/kiss-slam/pull/60) · 已关闭，未合并：** 修复二维栅格导出为 ROS 地图时的图像尺寸与方向错误，保留栅格的世界坐标位置。
 - 验证：13 项 PNG／YAML 文件回归测试在原导出方向下 10 项失败，修复后全部通过；覆盖非方形地图、正负原点、不同分辨率及占用／空闲／未知状态，并加入上游 CI。本机验证范围为文件导出及坐标约定，未运行完整 SLAM 或 ROS 地图服务器。
-- **[MapClosures #118](https://github.com/PRBonn/MapClosures/pull/118) · 已提交，待评审：** 修复二维闭环配准中错误的反射修正，使输出保持合法旋转，并使用一致的旋转计算平移。
+- **[MapClosures #118](https://github.com/PRBonn/MapClosures/pull/118) · 已关闭，未合并：** 修复二维闭环配准中错误的反射修正，使输出保持合法旋转，并使用一致的旋转计算平移。
 - 验证：9 项原生 C++ 回归测试修改前 5 项失败，修改后全部通过；Release CTest 连续五轮通过，测试接入上游跨平台 CI。本机验证配准模块，完整库构建与地图闭环管线状态见 PR。
 - **[GLIM #329](https://github.com/koide3/glim/pull/329) · 已提交，待评审：** 修复全局定位时间晚于已有里程计时轨迹管理器越界读取的问题；保留当前全局变换及插值样本，允许数据补齐后再次更新。
 - 验证：启用容器边界检查时，8 项原生 C++ 测试中原实现 6 项越界终止，修复后全部通过。覆盖最新时间边界、重复更新、数据补齐、正常插值及历史样本保留；新增 Eigen 独立测试工程与 GCC／Clang CI，本机未运行完整 GLIM 或 ROS 管线。
@@ -53,7 +55,7 @@
 - **[pytransform3d #386](https://github.com/dfki-ric/pytransform3d/pull/386) · 已合并：** 修复时序坐标变换查询异常后污染管理器当前时间的问题，确保后续正常查询使用原时间，保留原异常。
 - 验证：15 项新增回归用例原实现 13 项失败，修复后全部通过；NumPy 1.x／2.x 下全部 43 项变换管理器测试通过。全仓库 892 项通过、3 项可选 Open3D 测试跳过、1 项原有精度测试失败；Black、Ruff 与 CI 阻断 flake8 检查通过。
 
-- **[KISS-ICP #513](https://github.com/PRBonn/kiss-icp/pull/513) · 已提交，待评审：** 修复读取组织点云时忽略 row_step 的问题，跳过行末填充字节，避免后续行坐标及逐点时间戳被错误解析；连续点云保留零拷贝读取。
+- **[KISS-ICP #513](https://github.com/PRBonn/kiss-icp/pull/513) · 已关闭，未合并：** 修复读取组织点云时忽略 row_step 的问题，跳过行末填充字节，避免后续行坐标及逐点时间戳被错误解析；连续点云保留零拷贝读取。
 - 验证：19 项新增回归用例原实现 11 项失败，修复后全部通过；NumPy 1.x／2.x 检查通过，本机全部 20 项 Python 测试通过。9 组真实 ROS1 bag、ROS2 SQLite／MCAP 文件验证解析、重读及原生去畸变结果；与 #512 合并后的 39 项测试通过。原生扩展使用发布版 Windows wheel，未运行完整 ROS／硬件管线。
 
 - **[MCAP #1867](https://github.com/foxglove/mcap/pull/1867) · 已提交，待评审：** 修复 ROS2 写入器在同一话题换用消息定义时错误复用旧通道的问题，避免数据按错误定义解码；返回原定义时复用原通道。
@@ -62,17 +64,19 @@
 - **[SpatialMath #237](https://github.com/rai-opensource/spatialmath-python/pull/237) · 已提交，待评审：** 修复四元数对数使用 acos 导致小角度姿态增量丢失或失真的问题，标量与批量接口改用稳定角度计算，保持负标量主值分支及原有零向量规则。
 - 验证：新增 3 个回归测试方法，包含 12 项子测试；原实现 8 项标量子测试、2 项批量子测试及负实轴精度检查失败，修复后全部通过。NumPy 1.x／2.x 下完整测试均为 350 项通过、3 项跳过；300 组独立 SciPy 对照检查通过，Black、语法检查及源码包／wheel 构建通过。未运行 ROS 或机器人硬件，上游 CI 待维护者批准。
 
-- **[KISS-ICP #514](https://github.com/PRBonn/kiss-icp/pull/514) · 已提交，待评审：** 修复 HeLiPR 二进制扫描在记录完整时丢失最后一点的问题，避免末尾时间戳丢失影响其他点的时间归一化；保留忽略不完整尾记录的规则。
+- **[KISS-ICP #514](https://github.com/PRBonn/kiss-icp/pull/514) · 已关闭，未合并：** 修复 HeLiPR 二进制扫描在记录完整时丢失最后一点的问题，避免末尾时间戳丢失影响其他点的时间归一化；保留忽略不完整尾记录的规则。
 - 验证：20 项新增回归测试原实现 15 项失败、5 项通过，修复后全部通过。NumPy 1.x／2.x 下完整 Python 测试均为 21 项通过；五种布局的 10 组生成文件经发布版原生去畸变接口核对解析结果，Black、isort 通过。未重新构建原生库、运行真实 HeLiPR 基准或 ROS／硬件管线；上游 CI 待维护者批准。
 
 - **[manif #345](https://github.com/artivis/manif/pull/345) · 已提交，待评审：** 修复 SO(3) 小角度对数对等价四元数 q／-q 返回相反旋转向量的问题，使 SE(3) 位姿对数和 Jacobian 保持符号一致。
 - 原生 C++ 验证：4 项 float／double 新测试覆盖 48 组场景，原实现全部失败、修复后通过；完整核心套件 17 个 CTest 程序、5,064 项 GoogleTest 全部通过，C++11 独立解析值与位姿往返检查通过。未运行可选 Ceres／autodiff、Python 绑定或 ROS／硬件管线；上游 CI 待维护者批准。
 
-- **[pytransform3d #387](https://github.com/dfki-ric/pytransform3d/pull/387) · 已提交，待评审：** 修复批量四元数乘法在输出数组与输入重叠时破坏姿态组合结果的问题，支持原地计算和连续／非连续重叠视图，保留输出对象与原有计算公式。
+- **[pytransform3d #387](https://github.com/dfki-ric/pytransform3d/pull/387) · 已关闭，未合并：** 修复批量四元数乘法在输出数组与输入重叠时破坏姿态组合结果的问题，支持原地计算和连续／非连续重叠视图，保留输出对象与原有计算公式。
 - 验证：28 项新增测试原实现 22 项失败，修复后通过；完整批量旋转模块 151 项通过。NumPy 1.x／2.x 下全库均为 941 项通过、3 项可选测试跳过、1 项已在原基线复现的矩阵极严容差测试失败；每套环境 512 次独立 SciPy 比较及 float32／float64 的 32 步原地姿态组合通过。Black、Ruff、CI 阻断 flake8 与 Git 空白检查通过；未运行 ROS／硬件管线，PR 尚无 CI 检查记录。
 
-- **[pytransform3d #388](https://github.com/dfki-ric/pytransform3d/pull/388) · 已提交，待评审：** 修复批量四元数 wxyz／xyzw 顺序转换在原地写入或输出视图与输入重叠时覆盖分量的问题；此前单位姿态原地转换会变成无效四元数。只在可能共享内存时复制输入，保留输出对象、dtype 和独立输出路径。
+- **[pytransform3d #388](https://github.com/dfki-ric/pytransform3d/pull/388) · 已关闭，未合并：** 修复批量四元数 wxyz／xyzw 顺序转换在原地写入或输出视图与输入重叠时覆盖分量的问题；此前单位姿态原地转换会变成无效四元数。只在可能共享内存时复制输入，保留输出对象、dtype 和独立输出路径。
 - 验证：74 项新增测试原实现 26 项失败，修复后通过；完整批量旋转模块 197 项通过。NumPy 1.x／2.x 下全库各 987 项通过、3 项跳过、1 项既有矩阵极严容差测试失败；每套环境 512 次独立 SciPy 旋转比较通过。格式及静态检查通过；未运行 ROS／硬件管线，PR 暂无 CI 检查记录。
 
-- **[KISS-ICP #515](https://github.com/PRBonn/kiss-icp/pull/515) · 已提交，待评审：** 修复反端序 PointCloud2 读取原地改动消息数据或拒绝只读缓冲区的问题，使坐标与时间戳能稳定重读，同端序路径保留零拷贝。
+- **[KISS-ICP #515](https://github.com/PRBonn/kiss-icp/pull/515) · 已关闭，未合并：** 修复反端序 PointCloud2 读取原地改动消息数据或拒绝只读缓冲区的问题，使坐标与时间戳能稳定重读，同端序路径保留零拷贝。
 - 验证：36 项新增测试原实现 16 项失败，修复后通过；NumPy 1.x／2.x 下完整 Python 套件各 37 项通过。NumPy 2.x 下 6 组生成的 ROS1 bag／ROS2 SQLite／MCAP 文件通过读取、缓冲区保留、重读、重置和发布版原生去畸变检查。与 #512／#513 临时组合后两套环境各 75 项测试通过，另有 6 组端序与行填充组合检查通过；Black、isort、Git 空白检查通过。未重建完整原生库或运行 ROS／硬件管线，上游 CI 待维护者批准。
+
+- 评审跟进：已[回复 pytransform3d 维护者的贡献动机问题](https://github.com/dfki-ric/pytransform3d/pull/387#issuecomment-6016875249)。后续优先处理既有反馈、真实用户报告与精简补丁，减少连续的小型提交；关闭状态及原因见贡献计划。
