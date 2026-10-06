@@ -4,7 +4,7 @@
 
 ## 2026-10-06 评审状态更新
 
-截至 2026-10-06：21 项已提交 PR，4 项已合并、9 项待评审（其中 1 项草稿）、8 项已关闭未合并。关闭记录保留为工程尝试，不作为上游已接受成果。
+截至 2026-10-06：22 项已提交 PR，4 项已合并、10 项待评审（其中 1 项草稿）、8 项已关闭未合并。关闭记录保留为工程尝试，不作为上游已接受成果。
 
 维护者指出提交频率、实际需求与评审成本问题。后续优先真实用户报告、实际输入与精简补丁；已存在修复 PR 的问题不重复开 PR。关闭 PR 的本机测试记录只是复现证据，不代表上游接受。
 
@@ -25,7 +25,7 @@
 | [KISS-SLAM](https://github.com/PRBonn/kiss-slam) | 激光 SLAM、局部地图与栅格地图导出 | 2026-08-11 | 地图坐标、文件导出与机器人系统接口 |
 | [MapClosures](https://github.com/PRBonn/MapClosures) | 点云密度地图闭环检测与位姿配准 | 2026-08-14 | 二维配准、刚体变换与几何回归测试 |
 | [GLIM](https://github.com/koide3/glim) | 点云定位与建图 | 2026-09-06 | 数据导入、评测与定位模块；需要对应运行环境 |
-| [gtsam_points](https://github.com/koide3/gtsam_points) | 点云配准与 GTSAM 优化因子 | 2026-09-10 | 邻域搜索、几何容器与回归测试 |
+| [gtsam_points](https://github.com/koide3/gtsam_points) | 点云配准与 GTSAM 优化因子 | 2026-10-06（当日核对） | 用户编译问题、GTSAM／Boost 兼容、邻域搜索 |
 | [MCAP](https://github.com/foxglove/mcap) | ROS 2 传感器数据记录与消息编码 | 2026-10-05 | CDR 消息定义、时间字段与数据往返验证 |
 | [Ouster SDK](https://github.com/ouster-lidar/ouster-sdk) | 激光数据处理、位姿插值与点云变换 | 2026-09-01 | 传感器时间戳、逐列位姿及回归测试 |
 | [pytransform3d](https://github.com/dfki-ric/pytransform3d) | 机器人刚体变换、时序位姿与插值 | 2026-10-02 | 末帧查询、坐标系链路及几何回归测试 |
@@ -304,3 +304,28 @@
 - 验证：四个解析值场景原实现全部失败，补丁后通过；EKF／动态模型／UKF 共 9 项通过。全库 110 项通过、2 项跳过、1 项未修改计时器除零失败，完整原主分支为 106 项通过、2 项跳过、同一项失败。Sphinx HTML 文档构建完成，有改动示例之外的 autosummary 警告；语法及空白检查通过。
 - 沟通：已[回复原 Issue](https://github.com/pypose/pypose/issues/388#issuecomment-6019174936)，补充观测残差问题，并说明 NLS 的观测 Jacobian 不会因先调用预测就自动成为 H A。
 - 边界：Windows／Python 3.12／PyTorch 2.8.0+cpu；未运行 CUDA、ROS、硬件或完整机器人应用。该草稿需要评审当前测量的时序约定；传入旧状态测量的既有调用者需调整索引。未宣称上游合并或 CI 通过。
+
+## 第二十二项贡献：gtsam_points 旧版 Boost 空值兼容
+
+- PR：[gtsam_points #108](https://github.com/koide3/gtsam_points/pull/108)，已提交，待评审。实际需求来自 [Issue #105](https://github.com/koide3/gtsam_points/issues/105)，报告者 andresgaluitcl 在 Ubuntu 22.04 编译 GLIM 时遇到错误，并提出 inline const 方案。个人工作是验证该方案、提交精简补丁及解释原因，保留报告者归属。
+- 官方起点：`8e94654558dfbe7ddb0341de300daaf17e25ee02`。Boost 1.74 的 none_t 构造函数不是 constexpr，不能作为 constexpr 变量的类型；项目已要求 C++17，inline const 可以作为空 optional 的默认参数。只改一行，GTSAM 4.3 的 nullptr 分支保持原实现。
+- 验证环境：Windows／Zig-Clang 18.1.6／C++17／Eigen 3.4.0；使用实际迁移头文件、官方 Boost 1.74.0／1.83.0 和实际 GTSAM 头文件。GTSAM 配置／静态导出头在本机准备，实现头文件未修改。Boost 1.74 在该编译器下有既有 deprecated-builtin 警告。
+
+| GTSAM 头文件 | Boost | 原声明 | 修复后 |
+| --- | --- | --- | --- |
+| 4.2，4f66a491ffc83cf092d0d818b11dc35135521612 | 1.74.0 | none_t 非字面量编译错误 | 编译、运行通过 |
+| 同上 | 1.83.0 | 编译、运行通过 | 编译、运行通过 |
+| develop／4.3，1481eca5c743fc4623c1bb7e5f77e78a3e2498ed | 1.74.0 | 编译、运行通过 | 编译、运行通过 |
+| 同上 | 1.83.0 | 编译、运行通过 | 编译、运行通过 |
+
+验证源码：[gtsam-none.cpp](validation/gtsam-none.cpp)。检查 OptionalMatrixType／OptionalMatrixVecType 的空默认参数及非空参数，以及对应 Boost/std optional 的构造、赋值和重置。可在已经配置的 GTSAM 头文件环境下执行：
+
+```sh
+c++ -std=c++17 -O2 -I /path/to/gtsam_points/include -I /path/to/configured/gtsam/include -I /path/to/boost -I /path/to/eigen3 docs/validation/gtsam-none.cpp -o check_none
+./check_none
+```
+
+修复前 GTSAM 4.2＋Boost 1.74 应编译失败，其余组合应成功；修复后四组均应编译并以退出码 0 运行。Git 空白检查通过。未给上游添加额外测试套件或构建配置，这项声明修改直接通过头文件编译复现。
+
+- 沟通：已[回复原报告者](https://github.com/koide3/gtsam_points/issues/105#issuecomment-6019579177)，解释其建议为何有效，并关联修复 PR。
+- 边界：没有构建完整 GTSAM／gtsam_points／GLIM，没有复现完整 Ubuntu 环境，也没有运行 CUDA、ROS 或 SLAM 管线。本机头文件验证不代表上游 CI 或合并通过。

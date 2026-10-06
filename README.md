@@ -21,7 +21,7 @@
 
 ## 开源工作
 
-截至 2026-10-06：21 项已提交 PR，4 项已合并、9 项待评审（其中 1 项草稿）、8 项已关闭未合并。关闭记录保留为工程尝试，不作为上游已接受成果。
+截至 2026-10-06：22 项已提交 PR，4 项已合并、10 项待评审（其中 1 项草稿）、8 项已关闭未合并。关闭记录保留为工程尝试，不作为上游已接受成果。
 
 [贡献计划](docs/CONTRIBUTION_PLAN.md) · [公开 PR 记录](https://github.com/pulls?q=is%3Apr+author%3Adddd-jh)
 
@@ -85,3 +85,6 @@
 
 - **[PyPose #411](https://github.com/pypose/pypose/pull/411) · 草稿，待评审：** 针对已有用户 Issue，修复 EKF 更新时在旧状态计算观测 Jacobian 与残差的问题，使更新与预测状态一致；同步修正文档示例的测量时序。
 - 验证：一个参数化测试覆盖四个线性／非线性、零／非零创新场景，原实现全部失败，补丁后通过；相关 EKF／动态模型／UKF 共 9 项通过。完整库 110 项通过、2 项跳过、1 项未修改计时器除零失败，同一失败在原主分支复现（106 项通过、2 项跳过、1 项失败）。Sphinx HTML 文档、语法及 Git 空白检查通过；本机 CPU 验证，未运行 CUDA、ROS 或硬件，上游 CI 尚无结果。
+
+- **[gtsam_points #108](https://github.com/koide3/gtsam_points/pull/108) · 已提交，待评审：** 针对已有用户编译报告，验证并提交报告者提出的单行修复：将 Boost 分支的 NoneValue 从 constexpr 改为 inline const，使 GTSAM 4.2 可兼容旧版 Boost 的非字面量 none_t。
+- 验证：真实 GTSAM／Boost 头文件的四组 C++17 编译与运行对照；原代码在 GTSAM 4.2＋Boost 1.74 失败，修复后四组均通过。空／非空矩阵默认参数及 optional 构造、重置正常；源码见贡献计划。本机 Windows／Clang 验证，未构建完整 GTSAM、gtsam_points、GLIM、CUDA 或 ROS，尚无上游 CI 结果。
